@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.itdfq.dao.CstCustomerDAO">
+
+    <resultMap id="cstCustomerMap" type="com.itdfq.model.Customer">
+        <id property="custId" column="cust_id"/>
+        <result property="custName" column="cust_name"/>
+        <result property="custSource" column="cust_source"/>
+        <result property="custIndustry" column="cust_industry"/>
+        <result property="custLevel" column="cust_level"/>
+        <result property="custAddress" column="cust_address"/>
+        <result property="custPhone" column="cust_phone"/>
+    </resultMap>
+
+    <!--通过ID查询单个-->
+    <select id="findById" resultMap="cstCustomerMap">
+        SELECT cust_id,cust_name,cust_source,cust_industry,cust_level,cust_address,cust_phone FROM cst_customer
+        WHERE cust_id=#{id}
+    </select>
+
+    <select id="myselect" resultMap="cstCustomerMap">
+        SELECT distinct cust_industry  FROM cst_customer
+
+    </select>
+
+    <!--分页查询-->
+    <select id="findByPage" resultMap="cstCustomerMap">
+        SELECT cust_id,cust_name,cust_source,cust_industry,cust_level,cust_address,cust_phone FROM cst_customer
+    </select>
+
+    <!--分页条件查询-->
+    <select id="findByTj" resultMap="cstCustomerMap">
+        SELECT cust_id,cust_name,cust_source,cust_industry,cust_level,cust_address,cust_phone FROM cst_customer
+            where 1
+        <if test="custName != null and custName!=''">
+            and   cust_name  like concat('%',#{custName},'%')
+        </if>
+        <if test="custSource != null and custSource != '' ">
+            AND cust_source like concat('%',#{custSource},'%')
+        </if>
+        <if test="custIndustry != null and custIndustry!= '' ">
+            AND cust_industry like concat('%',#{custIndustry},'%')
+        </if>
+    </select>
+
+    <!--新增-->
+    <insert id="insert">
+        INSERT INTO cst_customer(cust_name,cust_source,cust_industry,cust_level,cust_address,cust_phone)
+        VALUES (#{custName},#{custSource},#{custIndustry},#{custLevel},#{custAddress},#{custPhone})
+    </insert>
+
+
+    <!--修改-->
+    <update id="update">
+        UPDATE cst_customer SET cust_name=#{custName},cust_source=#{custSource},cust_industry=#{custIndustry},cust_level=#{custLevel},cust_address=#{custAddress},cust_phone=#{custPhone}
+        WHERE cust_id=#{custId}
+    </update>
+
+    <!--通过ID删除单个-->
+    <delete id="deleteById">
+        DELETE FROM cst_customer
+        WHERE cust_id=#{id}
+    </delete>
+
+<!--    批量删除-->
+<delete id="deleteSelect">
+    delete from cst_customer where cust_id in
+    <foreach collection="list" item="custId" open="(" close=")" separator=",">
+        #{custId}
+    </foreach>
+</delete>
+</mapper>

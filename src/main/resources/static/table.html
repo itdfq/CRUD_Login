@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8">
+    <title>Layui</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="layui/css/layui.css" media="all">
+
+    <script src="layui/jquery.min.js"></script>
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+<!--<div class="layui-container" style="width: 100%" >-->
+    <div >
+        <fieldset class="table-search-fieldset">
+            <legend>搜索信息</legend>
+            <div style="margin: 10px 10px 10px 10px">
+                <form class="layui-form layui-form-pane" action="">
+                    <div class="layui-form-item">
+                        <div class="layui-inline">
+                            <label class="layui-form-label">客户姓名</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="custName" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+<!--                        <div class="layui-inline">-->
+<!--                            <label class="layui-form-label">用户性别</label>-->
+<!--                            <div class="layui-input-inline">-->
+<!--                                <input type="text" name="sex" autocomplete="off" class="layui-input">-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="layui-inline">-->
+<!--                            <label class="layui-form-label">用户城市</label>-->
+<!--                            <div class="layui-input-inline">-->
+<!--                                <input type="text" name="city" autocomplete="off" class="layui-input">-->
+<!--                            </div>-->
+<!--                        </div>-->
+                        <div class="layui-inline">
+                            <label class="layui-form-label">客户电话</label>
+                            <div class="layui-input-inline">
+                                <input type="text" name="custPhone" autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <label class="layui-form-label">客户所属信息行业</label>
+                            <div class="layui-input-inline">
+                                <select name="custIndustry"  id="myselect">
+                                    <option disabled>请选择一个工厂</option>
+                                    <option value="">全部</option>-->
+<!--                                    <option value="010">北京</option>-->
+<!--                                    <option value="021">上海</option>-->
+<!--                                    <option value="0571">杭州</option>-->
+                                </select>
+                            </div>
+
+                        </div>
+                        <div class="layui-inline">
+                            <button type="submit" class="layui-btn layui-btn-primary"  lay-submit lay-filter="data-search-btn"><i class="layui-icon"></i> 搜 索</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </fieldset>
+
+        <script type="text/html" id="toolbarDemo">
+            <div class="layui-btn-container">
+<!--                <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>-->
+<!--                <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>-->
+<!--                <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>-->
+                <button class="layui-btn layui-btn-sm" lay-event="insert">添加数据</button>
+                <button class="layui-btn layui-btn-sm" lay-event="deleteSelect">删除选中行数据</button>
+                <button class="layui-btn layui-btn-sm" lay-event="layout">退出登录</button>
+<!--                <div> 用户名 :</div>-->
+<!--                <div th:if="${session.user}" ><span th:text="${session.user.realName}"/></div>-->
+            </div>
+        </script>
+
+        <table class="layui-hide" id="test" lay-filter="test" ></table>
+
+        <script type="text/html" id="barDemo">
+<!--            <a class="layui-btn layui-btn-xs" lay-event="detail">修改密码</a>-->
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+
+        </script>
+
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="layui/layui.all.js"></script>
+<!--<script src="layui/layui.all.js" charset="utf-8"></script>-->
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+        $.ajax({
+            url:'/user/findByUser',
+            type:'post',
+            success:function (data){
+                if (data.msg !=1){
+                    alert(data.msg);
+                    window.self.location="index.html";
+                    // $.messager.alert({
+                    //     title:'提示',
+                    //     msg:'读取数据异常：'+map.msg
+                    // });
+                    return ;
+                }else{
+                    table.render({
+                        elem: '#test'
+                        ,url:'/dfq/findByPage'
+                        ,toolbar: '#toolbarDemo'//开启头部工具栏，并为其绑定左侧模板
+                        ,title: '用户数据表'
+                        ,totalRow: true
+                        ,cellMinWidth: 80 //全局定义常规单元格的最小宽度，layui 2.2.1 新增
+                        ,id:"custId"  //表格的id
+                        // ,limits: [5,10, 20,50]
+                        // ,limit: 10 //每页默认显示的数量
+                        // ,height: $(document).height() - $('#potentialcustomerDataGrid').offset().top - 20 //分页栏一直显示在最下方
+                        ,cols: [[
+                            {type: 'checkbox', fixed: 'left',align:'center'}
+                            // ,{field:'custId', title:'ID', width:'10%', fixed: 'left', unresize: true, sort: true, totalRowText: '合计'}
+                            ,{field:'custName', title:'客户名字', width:'10%', edit: 'text'}
+                            // ,{field:'email', title:'邮箱', width:150, edit: 'text', templet: function(res){
+                            //         return '<em>'+ res.email +'</em>'
+                            //     }}
+                            ,{field:'custSource', title:'客户信息来源', width:'10%', sort: true, totalRow: true,edit: 'text'}
+                            ,{field:'custIndustry', title:'客户所属行业', width:'10%', edit: 'text', sort: true}
+                            ,{field:'custLevel', title:'客户级别', width:'10%',edit: 'text', sort: true, totalRow: true}
+                            ,{field:'custAddress', title:'客户住址', edit: 'text',width:'10%'}
+                            ,{field:'custPhone', title:'客户电话', width:'10%',edit: 'text'}
+                            ,{fixed: 'right', title:'操作', toolbar: '#barDemo', width:'20%'}
+                        ]]
+                        ,page: true
+                        ,limit: 10
+                    });
+
+                }
+            }
+        })
+
+        // 监听搜索操作
+        form.on('submit(data-search-btn)', function (data) {
+            var result = JSON.stringify(data.field);
+            console.log(result);
+            var index=layer.msg('查询中，请稍后...',{icon:16,time:false,shade:0});
+            // layer.alert(result, {
+            //     title: '最终的搜索信息'
+            // });
+            table.reload('custId',{
+                url: 'dfq/selectByTj'
+                ,method: 'post'
+                ,where: {
+                    'custName':data.field.custName,
+                    'custPhone':data.field.custPhone,
+                    'custIndustry':data.field.custIndustry
+                }
+                ,contentType: 'application/json'
+                ,page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            })
+            layer.close(index);
+            return false;
+
+        });
+
+        //工具栏事件
+        table.on('toolbar(test)', function(obj){
+            var checkStatus = table.checkStatus(obj.config.id);
+            switch(obj.event) {
+                case 'getCheckData':
+                    var data = checkStatus.data;
+                    layer.alert(JSON.stringify(data));
+
+                    break;
+                case 'getCheckLength':
+                    var data = checkStatus.data;
+                    layer.msg('选中了：' + data.length + ' 个');
+                    break;
+                case 'isAll':
+                    layer.msg(checkStatus.isAll ? '全选' : '未全选')
+                    break;
+                case 'insert':
+                    layer.open({
+                        title: '添加用户',
+                        type: 2,
+                        shade: 0.2,
+                        maxmin: true,
+                        shadeClose: true,
+                        area: ['100%', '100%'],
+                        content: 'add.html',
+                    });
+                    $(window).on("resize", function () {
+                        layer.full(index);
+                    });
+                    break;
+                case 'deleteSelect':
+                    var data = checkStatus.data;
+                    var custId = "";
+                    if (data.length > 0) {
+                        for (var i = 0; i < data.length; i++) {
+                            custId += data[i].custId + ",";
+                        }
+                        console.log(custId);
+                        layer.confirm('确定删除选中的数据？', {icon: 3, title: '提示信息'}, function (index) {
+                            $.post('/dfq/deleteSelect', {"custId": custId}, function (data) {
+                                layer.msg("删除成功", {icon: 6});
+                                layer.close(index);
+                                window.parent.location.reload();//修改成功后刷新父界面
+                                table.reload();
+                            });
+                        })
+                    } else {
+                        layer.msg('请选择需要删除的数据', {icon: 5});
+                    }
+                    break;
+                case 'layout':
+                    $.ajax({
+                        url: "/user/logout",
+                        contentType: "application/json;charset=utf-8",
+                        async: false,//false为同步，这个Ajax请求将整个浏览器锁死
+                        success: function (data) {
+                            if (data.msg == 1) {
+                                layer.msg("退出成功", {icon: 6});
+                                window.self.location="index.html";
+                            } else {
+                                layer.msg("退出失败", {icon: 5});
+                            }
+                        }
+                    });
+
+            }
+        });
+        //监听行工具事件
+        table.on('tool(test)', function(obj){
+            var data = obj.data;
+            if(obj.event === 'del'){
+                    var d = {"custId": data.custId};
+                    var datas = JSON.stringify(d);
+
+                    layer.confirm('真的删除行么',{icon:3, title:'提示信息'}, function (index) {
+                        $.ajax({
+                            url: "/dfq/deleteById",
+                            type: 'post',
+                            data: datas,
+                            contentType: "application/json;charset=utf-8",
+                            dataType: 'json',
+                            async: false,//false为同步，这个Ajax请求将整个浏览器锁死
+                            success: function (data) {
+                                if (data.msg == 1) {
+                                    //删除这一行
+                                    obj.del();
+                                    //关闭弹框
+                                    layer.close(index);
+                                    layer.msg("删除成功", {icon: 6});
+                                } else {
+                                    layer.msg("删除失败", {icon: 5});
+                                }
+                            }
+                        });
+                        return false;
+                    });
+            } else if(obj.event === 'edit'){
+                var index = layer.open({
+                    title: '修改用户',
+                    type: 2,
+                    shade: 0.2,
+                    maxmin:true,
+                    shadeClose: true,
+                    area: ['100%', '100%'],
+                    content: 'edit.html',
+                    success: function (layero, index) {
+                        //找到它的子窗口的body
+                        let body = layer.getChildFrame('body', index);
+                        // var body = layer.getChildFrame('body', table);  //巧妙的地方在这里哦
+                        // //为子窗口元素赋值
+                        body.contents().find("#custId").val(data.custId);
+                        body.contents().find("#custName").val(data.custName);
+                        body.contents().find("#custSource").val(data.custSource);
+                        body.contents().find("#custPhone").val(data.custPhone);
+                        body.contents().find("#custAddress").val(data.custAddress);
+                        body.contents().find("#custLevel").val(data.custLevel);
+                        body.contents().find("#custIndustry").val(data.custIndustry);
+                    }
+                });
+                // $(window).on("resize", function () {
+                //     layer.full(table);
+                // });
+                return false;
+            }else if (obj.event == 'detail'){
+                //弹出框
+                layer.open({
+                    id:1,
+                    type: 1,//可传入的值有：0（信息框，默认）1（页面层）2（iframe层）3（加载层）4（tips层）
+                    title:'修改密码',
+                    skin:'layui-layer-rim',
+                    area:['450px', 'auto'],
+
+                    content: ' <div class="row" style="width: 420px;  margin-left:7px; margin-top:10px;">'
+                        +'<div class="col-sm-12">'
+                        +'<div class="input-group">'
+                        +'<span class="input-group-addon"> 新 密 码   :</span>'
+                        +'<input id="firstpwd" type="password" class="form-control" placeholder="请输入密码">'
+                        +'</div>'
+                        +'</div>'
+                        +'<div class="col-sm-12" style="margin-top: 10px">'
+                        +'<div class="input-group">'
+                        +'<span class="input-group-addon">确认密码:</span>'
+                        +'<input id="secondpwd" type="password" class="form-control" placeholder="请再输入一次密码">'
+                        +'</div>'
+                        +'</div>'
+                        +'</div>'
+                    ,
+                    btn:['保存','取消'],
+                    btn1: function (index,layero) {
+                    },
+                    btn2:function (index,layero) {
+                        layer.close(index);
+                    }
+
+                });
+            }
+        });
+
+    });
+    layui.use(['form'], function () {
+        var form = layui.form,
+            layer = layui.layer,
+            $ = layui.$;
+        //监听提交
+        form.on('submit(saveBtn)', function (data) {
+            var index = layer.alert(JSON.stringify(data.field), {
+                title: '最终的提交信息'
+            }, function () {
+                $.ajax({
+                    url: 'dfq/update',
+                    data: JSON.stringify(data.field),
+                    contentType: "application/json;charset=utf-8",
+                    dataType:'json',
+                    type: "post",
+                    async: false,//false为同步，这个Ajax请求将整个浏览器锁死
+                    success:function (d){
+                        if (d.msg==1){
+                            alert("添加成功");
+                            // window.parent.location.reload();//修改成功后刷新父界面
+                        }else {
+                            alert(d.msg);
+                        }
+                    }
+                })
+                // 关闭弹出层
+                layer.close(index);
+                var iframeIndex = parent.layer.getFrameIndex(window.name);
+                parent.layer.close(iframeIndex);
+
+            });
+            return false;
+        });
+
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            type:"get",
+            url:'/dfq/myselect',
+            success:function(userList){
+                if (userList.msg==1){
+                    // console.log(userList.data);
+                    // alert(userList.data[3].custIndustry);
+                    // alert(userList.data.length);
+                    var unitObj=document.getElementById("#myselect"); //页面上的<html:select>元素
+                    if(userList.data!=null){ //后台传回来的select选项
+                        for(var i=0;i<userList.data.length;i++){
+                            $("#myselect").append("<option value='" + userList.data[i].custIndustry + "'>" + userList.data[i].custIndustry + "</option>");
+                        }
+                        layui.use('form', function () {
+                            var form = layui.form;
+                            form.render();
+                        });
+
+                    }
+
+                }
+
+            }
+
+        })
+    })
+
+</script>
+</body>
+</html>

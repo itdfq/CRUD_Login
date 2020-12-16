@@ -1,0 +1,7 @@
+.idea/
+node_modules/
+logs/
+.svn
+*.iml
+npm-debug.log
+target/
